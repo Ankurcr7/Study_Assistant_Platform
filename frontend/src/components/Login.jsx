@@ -1,9 +1,10 @@
 import { useState } from "react";
 import axios from "axios";
 
-const Login = ({ setPage }) => {
+const Login = ({ setPage, setIsLoggedIn }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -14,14 +15,12 @@ const Login = ({ setPage }) => {
         { email, password }
       );
 
-      alert(res.data.message);
-
-      // Store token (for protected routes)
       localStorage.setItem("token", res.data.token);
       localStorage.setItem("user", JSON.stringify(res.data.user));
 
-      // Go to dashboard
+      setIsLoggedIn(true);
       setPage("dashboard");
+
     } catch (error) {
       alert(error.response?.data?.message || "Login failed");
     }
@@ -39,12 +38,21 @@ const Login = ({ setPage }) => {
           onChange={(e) => setEmail(e.target.value)}
         />
 
-        <input
-          type="password"
-          placeholder="Password"
-          required
-          onChange={(e) => setPassword(e.target.value)}
-        />
+        {/* Password Field with Toggle */}
+        <div className="password-field">
+          <input
+            type={showPassword ? "text" : "password"}
+            placeholder="Password"
+            required
+            onChange={(e) => setPassword(e.target.value)}
+          />
+          <span
+            className="toggle-password"
+            onClick={() => setShowPassword(!showPassword)}
+          >
+            {showPassword ? "🙈" : "👁️"}
+          </span>
+        </div>
 
         <button type="submit">Login</button>
 

@@ -7,12 +7,17 @@ import Dashboard from "./components/Dashboard";
 
 function App() {
   const [page, setPage] = useState("home");
+  const [isLoggedIn, setIsLoggedIn] = useState(
+    !!localStorage.getItem("token")
+  );
 
   return (
     <>
-      <Navbar setPage={setPage} />
-      {page === "home" && <Home setPage={setPage} />}
-      {page === "login" && <Login setPage={setPage} />}
+      <Navbar setPage={setPage}
+        isLoggedIn={isLoggedIn}
+        setIsLoggedIn={setIsLoggedIn} />
+      {page === "home" && <Home setPage={setPage} isLoggedIn={isLoggedIn} />}
+      {page === "login" && <Login setPage={setPage} setIsLoggedIn={setIsLoggedIn} />}
       {page === "register" && <Register setPage={setPage} />}
       {page === "dashboard" && <Dashboard setPage={setPage} />}
     </>
