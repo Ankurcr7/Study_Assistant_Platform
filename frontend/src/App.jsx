@@ -6,7 +6,7 @@ import Register from "./components/Register";
 import Dashboard from "./components/Dashboard";
 
 function App() {
-  const [page, setPage] = useState("dashboard");
+  const [page, setPage] = useState("home");
 
   return (
     <>

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import axios from "axios";
 
 const Register = ({ setPage }) => {
   const [formData, setFormData] = useState({
@@ -7,11 +8,20 @@ const Register = ({ setPage }) => {
     password: "",
   });
 
-  const handleRegister = (e) => {
+  const handleRegister = async (e) => {
     e.preventDefault();
-    console.log(formData);
-    alert("Registered successfully (dummy)");
-    setPage("login");
+
+    try {
+      const res = await axios.post(
+        "http://localhost:5000/api/auth/register",
+        formData
+      );
+
+      alert(res.data.message);
+      setPage("login");
+    } catch (error) {
+      alert(error.response?.data?.message || "Registration failed");
+    }
   };
 
   return (
