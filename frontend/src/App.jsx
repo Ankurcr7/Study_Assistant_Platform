@@ -4,6 +4,8 @@ import Home from "./components/Home";
 import Login from "./components/Login";
 import Register from "./components/Register";
 import Dashboard from "./components/Dashboard";
+import UploadNotes from "./pages/UploadNotes";
+import MyNotes from "./pages/MyNotes";
 
 function App() {
   const [page, setPage] = useState("home");
@@ -20,6 +22,9 @@ function App() {
       {page === "login" && <Login setPage={setPage} setIsLoggedIn={setIsLoggedIn} />}
       {page === "register" && <Register setPage={setPage} />}
       {page === "dashboard" && <Dashboard setPage={setPage} />}
+      {page === "upload" && <UploadNotes />}
+      {page === "notes" && <MyNotes />}
+
     </>
   );
 }
