@@ -1,4 +1,5 @@
 import { useState } from "react";
+import axios from "axios";
 
 const Register = ({ setPage }) => {
   const [formData, setFormData] = useState({
@@ -6,12 +7,22 @@ const Register = ({ setPage }) => {
     email: "",
     password: "",
   });
+  const [showPassword, setShowPassword] = useState(false);
 
-  const handleRegister = (e) => {
+  const handleRegister = async (e) => {
     e.preventDefault();
-    console.log(formData);
-    alert("Registered successfully (dummy)");
-    setPage("login");
+
+    try {
+      const res = await axios.post(
+        "http://localhost:5000/api/auth/register",
+        formData
+      );
+
+      alert(res.data.message);
+      setPage("login");
+    } catch (error) {
+      alert(error.response?.data?.message || "Registration failed");
+    }
   };
 
   return (
@@ -37,14 +48,23 @@ const Register = ({ setPage }) => {
           }
         />
 
-        <input
-          type="password"
-          placeholder="Password"
-          required
-          onChange={(e) =>
-            setFormData({ ...formData, password: e.target.value })
-          }
-        />
+        {/* Password with toggle */}
+        <div className="password-field">
+          <input
+            type={showPassword ? "text" : "password"}
+            placeholder="Password"
+            required
+            onChange={(e) =>
+              setFormData({ ...formData, password: e.target.value })
+            }
+          />
+          <span
+            className="toggle-password"
+            onClick={() => setShowPassword(!showPassword)}
+          >
+            {showPassword ? "🙈" : "👁️"}
+          </span>
+        </div>
 
         <button type="submit">Register</button>
 

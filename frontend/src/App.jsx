@@ -4,17 +4,27 @@ import Home from "./components/Home";
 import Login from "./components/Login";
 import Register from "./components/Register";
 import Dashboard from "./components/Dashboard";
+import UploadNotes from "./pages/UploadNotes";
+import MyNotes from "./pages/MyNotes";
 
 function App() {
-  const [page, setPage] = useState("dashboard");
+  const [page, setPage] = useState("home");
+  const [isLoggedIn, setIsLoggedIn] = useState(
+    !!localStorage.getItem("token")
+  );
 
   return (
     <>
-      <Navbar setPage={setPage} />
-      {page === "home" && <Home setPage={setPage} />}
-      {page === "login" && <Login setPage={setPage} />}
+      <Navbar setPage={setPage}
+        isLoggedIn={isLoggedIn}
+        setIsLoggedIn={setIsLoggedIn} />
+      {page === "home" && <Home setPage={setPage} isLoggedIn={isLoggedIn} />}
+      {page === "login" && <Login setPage={setPage} setIsLoggedIn={setIsLoggedIn} />}
       {page === "register" && <Register setPage={setPage} />}
       {page === "dashboard" && <Dashboard setPage={setPage} />}
+      {page === "upload" && <UploadNotes />}
+      {page === "notes" && <MyNotes />}
+
     </>
   );
 }

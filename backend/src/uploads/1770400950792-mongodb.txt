@@ -1,0 +1,17 @@
+mongo db
+
+
+username: ankurdas140905
+password: XIfUrLTDBZNk39MR
+
+project jsondb:-
+
+database
+username : json_db_user
+password : json_db_user_14
+
+project nextjs:-
+
+cluster
+username : ankurdas140905
+password : utzIkLDsDuvGglez
