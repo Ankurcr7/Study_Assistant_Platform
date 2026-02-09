@@ -1,10 +1,9 @@
 const express = require("express");
 const cors = require("cors");
 const connectDB = require("./src/config/dbConnect");
+const path = require("path");
 const authRoutes = require("./src/routes/authRoutes");
 const noteRoutes = require("./src/routes/noteRoutes");
-const path = require("path");
-
 
 
 

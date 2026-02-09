@@ -25,9 +25,9 @@ const Dashboard = ({ setPage }) => {
       <aside className="sidebar">
         <ul>
           <li onClick={() => goTo("home")}>Home</li>
-          <li onClick={() => setPage("notes")}>My Notes</li>
-          <li>Ask AI</li>
-          <li>Quizzes</li>
+          <li onClick={() => goTo("notes")}>My Notes</li>
+          <li onClick={() => goTo("ask-ai")}>Ask AI 🤖</li>
+          <li onClick={() => goTo("quizzes")}>Quizzes</li>
           <li className="logout" onClick={handleLogout}>
             Logout
           </li>
@@ -61,10 +61,9 @@ const Dashboard = ({ setPage }) => {
 
         {/* Quick Actions */}
         <div className="actions">
-          <button onClick={() => setPage("upload")}>Upload Notes</button>
-          {/* <button onClick={() => setPage("notes")}>My Notes</button> */}
-          <button>Ask AI</button>
-          <button>Create Quiz</button>
+          <button onClick={() => goTo("upload")}>Upload Notes</button>
+          <button onClick={() => goTo("ask-ai")}>Ask AI 🤖</button>
+          <button onClick={() => goTo("create-quiz")}>Create Quiz</button>
         </div>
       </main>
     </div>
