@@ -1,13 +1,14 @@
+require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
-const connectDB = require("./src/config/dbConnect");
 const path = require("path");
+
+
+const connectDB = require("./src/config/dbConnect");
 const authRoutes = require("./src/routes/authRoutes");
 const noteRoutes = require("./src/routes/noteRoutes");
+const aiRoutes = require("./src/routes/aiRoutes");
 
-
-
-require("dotenv").config();
 connectDB();
 
 const app = express();
@@ -21,6 +22,7 @@ app.get("/", (req, res) => {
 
 app.use("/api/auth", authRoutes);
 app.use("/api/notes", noteRoutes);
+app.use("/api/ai", aiRoutes);
 
 app.use(
   "/uploads",
