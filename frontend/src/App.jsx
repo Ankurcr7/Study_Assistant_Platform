@@ -7,6 +7,7 @@ import Dashboard from "./components/Dashboard";
 import UploadNotes from "./pages/UploadNotes";
 import MyNotes from "./pages/MyNotes";
 import AskAI from "./pages/AskAI";
+import CreateQuiz from "./pages/CreateQuiz";
 
 function App() {
   const [page, setPage] = useState("home");
@@ -26,6 +27,7 @@ function App() {
       {page === "upload" && <UploadNotes />}
       {page === "notes" && <MyNotes />}
       {page === "ask-ai" && <AskAI/>}
+      {page === "quizzes" && <CreateQuiz/>}
     </>
   );
 }

@@ -17,6 +17,7 @@ const Dashboard = ({ setPage }) => {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
     setPage("home");
+    window.location.href = "/";
   };
 
   return (
@@ -63,7 +64,7 @@ const Dashboard = ({ setPage }) => {
         <div className="actions">
           <button onClick={() => goTo("upload")}>Upload Notes</button>
           <button onClick={() => goTo("ask-ai")}>Ask AI 🤖</button>
-          <button onClick={() => goTo("create-quiz")}>Create Quiz</button>
+          <button onClick={() => goTo("quizzes")}>Create Quiz</button>
         </div>
       </main>
     </div>
