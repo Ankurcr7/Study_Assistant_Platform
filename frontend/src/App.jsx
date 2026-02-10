@@ -6,6 +6,7 @@ import Register from "./components/Register";
 import Dashboard from "./components/Dashboard";
 import UploadNotes from "./pages/UploadNotes";
 import MyNotes from "./pages/MyNotes";
+import AskAI from "./pages/AskAI";
 
 function App() {
   const [page, setPage] = useState("home");
@@ -24,7 +25,7 @@ function App() {
       {page === "dashboard" && <Dashboard setPage={setPage} />}
       {page === "upload" && <UploadNotes />}
       {page === "notes" && <MyNotes />}
-
+      {page === "ask-ai" && <AskAI/>}
     </>
   );
 }
