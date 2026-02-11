@@ -8,6 +8,8 @@ const connectDB = require("./src/config/dbConnect");
 const authRoutes = require("./src/routes/authRoutes");
 const noteRoutes = require("./src/routes/noteRoutes");
 const aiRoutes = require("./src/routes/aiRoutes");
+const dashboardRoutes = require('./src/routes/dashboardRoutes')
+
 
 connectDB();
 
@@ -23,6 +25,7 @@ app.get("/", (req, res) => {
 app.use("/api/auth", authRoutes);
 app.use("/api/notes", noteRoutes);
 app.use("/api/ai", aiRoutes);
+app.use("/api/dashboard", dashboardRoutes)
 
 app.use(
   "/uploads",

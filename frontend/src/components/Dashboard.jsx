@@ -1,13 +1,51 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 const Dashboard = ({ setPage }) => {
-  // Redirect if not logged in
+  const [stats, setStats] = useState({
+    notes: 0,
+    aiQuestions: 0,
+    quizzes: 0,
+  });
+
+  const [userName, setUserName] = useState("");
+
   useEffect(() => {
     const token = localStorage.getItem("token");
+    const user = JSON.parse(localStorage.getItem("user"));
+  
     if (!token) {
       setPage("login");
+      return;
     }
-  }, [setPage]);
+  
+    if (user) {
+      setUserName(user.name || user.username);
+    }
+  
+    const fetchStats = async () => {
+      try {
+        const res = await fetch("http://localhost:5000/api/dashboard/stats", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        const data = await res.json();
+  
+        setStats({
+          notes: data.notes || 0,
+          aiQuestions: data.aiQuestions || 0,
+          quizzes: data.quizzes || 0,
+        });
+      } catch (err) {
+        console.error("Error fetching stats:", err);
+      }
+    };
+  
+    fetchStats();
+  }, []);
+  
+
 
   const goTo = (page) => {
     setPage(page);
@@ -37,26 +75,23 @@ const Dashboard = ({ setPage }) => {
 
       {/* Main Content */}
       <main className="dashboard-content">
-        <h1>Welcome back 👋</h1>
+        <h1>Welcome back, {userName} 👋</h1>
         <p className="subtitle">Here's your study overview</p>
 
         {/* Stats */}
         <div className="stats">
           <div className="stat-card">
             📄 Notes <br />
-            <span>12</span>
+            <span>{stats.notes}</span>
+
           </div>
           <div className="stat-card">
             🤖 AI Questions <br />
-            <span>48</span>
+            <span>{stats.aiQuestions}</span>
           </div>
           <div className="stat-card">
             📝 Quizzes <br />
-            <span>6</span>
-          </div>
-          <div className="stat-card">
-            ⏱ Study Hours <br />
-            <span>24h</span>
+            <span>{stats.quizzes}</span>
           </div>
         </div>
 
