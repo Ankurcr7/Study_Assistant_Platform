@@ -54,10 +54,6 @@ const Dashboard = ({ setPage }) => {
             📝 Quizzes <br />
             <span>6</span>
           </div>
-          <div className="stat-card">
-            ⏱ Study Hours <br />
-            <span>24h</span>
-          </div>
         </div>
 
         {/* Quick Actions */}

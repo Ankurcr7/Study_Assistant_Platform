@@ -1,4 +1,5 @@
 const { OpenRouter } = require("@openrouter/sdk");
+const AiChat = require("../models/AiChat");
 
 const openRouter = new OpenRouter({
   apiKey: process.env.OPENROUTER_API_KEY,
@@ -27,9 +28,14 @@ const askAI = async (req, res) => {
 
     const answer = completion.choices[0].message.content;
 
+    const chat = await AiChat.create({
+      prompt,
+      answer,
+    });
+
     res.status(200).json({
       success: true,
-      answer,
+      answer: chat.answer,
     });
   } catch (error) {
     console.error("AI Controller Error:", error);
@@ -77,4 +83,10 @@ const generateQuiz = async (req,res)=>{
       }
 };
 
-module.exports = { askAI, generateQuiz };
+const getChats = async (req, res) => {
+  const chats = await AiChat.find().sort({ createdAt: -1 });
+  res.json(chats);
+};
+
+
+module.exports = { askAI, generateQuiz, getChats };
