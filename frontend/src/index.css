@@ -407,7 +407,7 @@ body {
 
 /* ---------- MAIN CONTENT ---------- */
 .dashboard-content {
-  margin-left: 220px; /* space for sidebar */
+  margin-left: 260px; 
   padding: 40px;
   width: 100%;
 }

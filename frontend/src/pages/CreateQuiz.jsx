@@ -29,6 +29,9 @@ const CreateQuiz = () => {
     const handleGenerateQuiz = async () => {
         if (!topic.trim()) return;
 
+        const token = localStorage.getItem("token");
+        if (!token) return;
+
         setLoading(true);
         setQuestions([]);
         setSelectedAnswers({});
@@ -37,24 +40,20 @@ const CreateQuiz = () => {
         try {
             const res = await fetch("http://localhost:5000/api/ai/generatequiz", {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
+                },
                 body: JSON.stringify({ topic }),
             });
 
             const data = await res.json();
             const parsed = JSON.parse(data.answer);
 
-            const newQuiz = {
-                topic,
-                questions: parsed.questions || [],
-                date: new Date().toLocaleString()
-            };
+            setQuestions(parsed.questions || []);
 
-            setQuestions(newQuiz.questions);
-
-            // Save to history
-            setQuizHistory(prev => [newQuiz, ...prev]);
-            setActiveQuizIndex(0);
+            // 🔥 Refresh history after generating quiz
+            fetchQuizHistory();
 
         } catch (err) {
             console.error(err);
@@ -62,6 +61,8 @@ const CreateQuiz = () => {
 
         setLoading(false);
     };
+
+
 
     const handleLoadQuiz = (index) => {
         const quiz = quizHistory[index];
@@ -83,16 +84,29 @@ const CreateQuiz = () => {
         setActiveQuizIndex(null);
     };
 
-    useEffect(() => {
-        fetch("http://localhost:5000/api/ai/quizhistory")
-            .then(res => res.json())
-            .then(data => {
-                console.log("Quiz history from DB:", data);
-                setQuizHistory(Array.isArray(data) ? data : []);
-            })
-            .catch(err => console.log(err));
-    }, []);
+    const fetchQuizHistory = async () => {
+        const token = localStorage.getItem("token");
+        if (!token) return;
+    
+        try {
+            const res = await fetch("http://localhost:5000/api/ai/quizhistory", {
+                headers: {
+                    "Authorization": `Bearer ${token}`
+                }
+            });
+    
+            const data = await res.json();
+            setQuizHistory(Array.isArray(data) ? data : []);
+        } catch (err) {
+            console.log(err);
+        }
+    };
+    
 
+    useEffect(() => {
+        fetchQuizHistory();
+    }, []);
+    
 
 
     return (

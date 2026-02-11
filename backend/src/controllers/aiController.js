@@ -31,9 +31,11 @@ const askAI = async (req, res) => {
     const answer = completion.choices[0].message.content;
 
     const chat = await AiChat.create({
+      user: req.user.id,
       prompt,
       answer,
     });
+
 
     res.status(200).json({
       success: true,
@@ -52,6 +54,7 @@ const askAI = async (req, res) => {
 const generateQuiz = async (req, res) => {
   try {
     const { topic } = req.body;
+    const userId = req.user.id;
 
     if (!topic) {
       return res.status(400).json({ message: "Prompt is required" });
@@ -63,7 +66,27 @@ const generateQuiz = async (req, res) => {
         messages: [
           {
             role: "user",
-            content: `Topic: ${topic} and in json format: {"questions": [{"question": "","options": [],"answer": ""}]} in a clean way without using any extra dialogue or "\n"!, just give the output in json format`,
+            content: `Generate a multiple choice quiz on the topic: ${topic}. 
+
+            Return the response strictly in valid JSON format using this exact structure:
+            {
+              "questions": [
+                {
+                  "question": "",
+                  "options": ["", "", "", ""],
+                  "answer": ""
+                }
+              ]
+            }
+            
+            Rules:
+            - Do NOT include any explanation, introduction, markdown, or extra text.
+            - Do NOT include \n or line breaks.
+            - Do NOT include backticks.
+            - Output ONLY valid JSON.
+            - Each question must have exactly 4 options.
+            - The answer must match one of the options exactly.
+            `,
           },
         ],
         stream: false,
@@ -85,6 +108,7 @@ const generateQuiz = async (req, res) => {
     const savedQuiz = await Quiz.create({
       topic: topic,
       questions: parsed.questions,
+      user: userId
     });
 
     res.status(200).json({
@@ -101,13 +125,20 @@ const generateQuiz = async (req, res) => {
 };
 
 const getChats = async (req, res) => {
-  const chats = await AiChat.find().sort({ createdAt: -1 });
+  const chats = await AiChat.find({ user: req.user.id })
+    .sort({ createdAt: -1 });
+
   res.json(chats);
+
 };
 
 const getQuizHistory = async (req, res) => {
-  const quizzes = await Quiz.find().sort({ createdAt: -1 });
+  const quizzes = await Quiz.find({ user: req.user.id })
+      .sort({ createdAt: -1 });
+
   res.json(quizzes);
 };
+
+
 
 module.exports = { askAI, generateQuiz, getChats, getQuizHistory };

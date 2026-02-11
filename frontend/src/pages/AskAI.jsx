@@ -9,11 +9,18 @@ const AskAI = () => {
 
     // 🔹 Fetch chat history
     useEffect(() => {
-        fetch("http://localhost:5000/api/ai/history")
+        const token = localStorage.getItem("token");
+
+        fetch("http://localhost:5000/api/ai/history", {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        })
             .then(res => res.json())
             .then(data => setHistory(data))
             .catch(err => console.log(err));
     }, []);
+
 
     const handleAsk = async () => {
         if (!prompt.trim()) return;
@@ -22,13 +29,17 @@ const AskAI = () => {
         setAnswer("");
 
         try {
+            const token = localStorage.getItem("token");
+
             const res = await fetch("http://localhost:5000/api/ai/ask", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
                 },
                 body: JSON.stringify({ prompt }),
             });
+
 
             const data = await res.json();
 
