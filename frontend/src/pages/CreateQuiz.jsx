@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 const CreateQuiz = () => {
     const [topic, setTopic] = useState("");
@@ -6,6 +6,8 @@ const CreateQuiz = () => {
     const [loading, setLoading] = useState(false);
     const [selectedAnswers, setSelectedAnswers] = useState({});
     const [checked, setChecked] = useState({});
+    const [quizHistory, setQuizHistory] = useState([]);
+    const [activeQuizIndex, setActiveQuizIndex] = useState(null);
 
     const handleSelect = (qIndex, option) => {
         setSelectedAnswers(prev => ({
@@ -13,6 +15,7 @@ const CreateQuiz = () => {
             [qIndex]: option,
         }));
     };
+
     const handleCheck = (qIndex, correctAnswer) => {
         setChecked(prev => ({
             ...prev,
@@ -23,26 +26,36 @@ const CreateQuiz = () => {
         }));
     };
 
-
-
     const handleGenerateQuiz = async () => {
         if (!topic.trim()) return;
 
         setLoading(true);
         setQuestions([]);
+        setSelectedAnswers({});
+        setChecked({});
 
         try {
             const res = await fetch("http://localhost:5000/api/ai/generatequiz", {
                 method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
+                headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ topic }),
             });
 
             const data = await res.json();
             const parsed = JSON.parse(data.answer);
-            setQuestions(parsed.questions || []);
+
+            const newQuiz = {
+                topic,
+                questions: parsed.questions || [],
+                date: new Date().toLocaleString()
+            };
+
+            setQuestions(newQuiz.questions);
+
+            // Save to history
+            setQuizHistory(prev => [newQuiz, ...prev]);
+            setActiveQuizIndex(0);
+
         } catch (err) {
             console.error(err);
         }
@@ -50,36 +63,82 @@ const CreateQuiz = () => {
         setLoading(false);
     };
 
-    const TypingDots = () => {
-        return (
-            <span className="typing-dots">
-                <span>.</span>
-                <span>.</span>
-                <span>.</span>
-            </span>
-        );
+    const handleLoadQuiz = (index) => {
+        const quiz = quizHistory[index];
+
+        setQuestions(quiz.questions || []);
+        setTopic(quiz.topic || "");
+        setActiveQuizIndex(index);
+
+        setSelectedAnswers({});
+        setChecked({});
     };
+
+
+    const handleNewQuiz = () => {
+        setTopic("");
+        setQuestions([]);
+        setSelectedAnswers({});
+        setChecked({});
+        setActiveQuizIndex(null);
+    };
+
+    useEffect(() => {
+        fetch("http://localhost:5000/api/ai/quizhistory")
+            .then(res => res.json())
+            .then(data => {
+                console.log("Quiz history from DB:", data);
+                setQuizHistory(Array.isArray(data) ? data : []);
+            })
+            .catch(err => console.log(err));
+    }, []);
+
+
+
     return (
-        <div className="quiz-wrapper">
-            <div className="quiz-card">
-                <h2>🤖 AI-generated questions</h2>
-                <p className="subtitle">
-                    Enter a topic and let AI create a quiz for you
-                </p>
+        <div className="quiz-layout">
 
-                <input
-                className="input"
-                    type="text"
-                    placeholder="e.g. JavaScript, DBMS, Operating System"
-                    value={topic}
-                    onChange={(e) => setTopic(e.target.value)}
-                />
-
-                <button onClick={handleGenerateQuiz} disabled={loading}>
-                    {loading ? <TypingDots /> : "Generate Quiz"}
+            {/* Sidebar */}
+            <div className="quiz-sidebar">
+                <button className="new-quiz-btn" onClick={handleNewQuiz}>
+                    + New Quiz
                 </button>
 
-                {questions.length > 0 && (
+                <div className="quiz-history">
+                    {quizHistory.map((quiz, index) => (
+                        <div
+                            key={quiz._id || index}
+                            className={`history-item ${activeQuizIndex === index ? "active" : ""}`}
+                            onClick={() => handleLoadQuiz(index)}
+                        >
+                            <h4>{quiz.topic}</h4>
+                            <p>{quiz.questions?.length || 0} Questions</p>
+                            <small>{new Date(quiz.createdAt).toLocaleString()}</small>
+                        </div>
+                    ))}
+                </div>
+
+            </div>
+
+            {/* Main Content */}
+            <div className="quiz-main">
+                <h2>🤖 AI Quiz Generator</h2>
+
+                <div className="quiz-input-section">
+                    <input
+                        className="input"
+                        type="text"
+                        placeholder="Enter topic..."
+                        value={topic}
+                        onChange={(e) => setTopic(e.target.value)}
+                    />
+
+                    <button onClick={handleGenerateQuiz} disabled={loading}>
+                        {loading ? "Generating..." : "Generate Quiz"}
+                    </button>
+                </div>
+
+                {Array.isArray(questions) && questions.length > 0 && (
                     <div className="quiz-list">
                         {questions.map((q, index) => {
                             const selected = selectedAnswers[index];
@@ -90,13 +149,16 @@ const CreateQuiz = () => {
                                 <div key={index} className="quiz-question">
                                     <h4>Q{index + 1}. {q.question}</h4>
 
-                                    <div className="options">
-                                        {q.options.map((opt, i) => {
+                                    {Array.isArray(q.options) &&
+                                        q.options.map((opt, i) => {
                                             let optionClass = "option";
 
                                             if (isChecked) {
-                                                if (opt === q.answer) optionClass += " correct";
-                                                else if (opt === selected) optionClass += " wrong";
+                                                if (opt === q.answer) {
+                                                    optionClass += " correct";
+                                                } else if (opt === selected) {
+                                                    optionClass += " wrong";
+                                                }
                                             }
 
                                             return (
@@ -109,11 +171,11 @@ const CreateQuiz = () => {
                                                         checked={selected === opt}
                                                         onChange={() => handleSelect(index, opt)}
                                                     />
-                                                    <span>{opt}</span>
+                                                    {opt}
                                                 </label>
                                             );
                                         })}
-                                    </div>
+
 
                                     {!isChecked && (
                                         <button
@@ -124,26 +186,23 @@ const CreateQuiz = () => {
                                             Check Answer
                                         </button>
                                     )}
-
                                     {isChecked && (
-                                        <div className="result-box">
-                                            <p className={checkData.isCorrect ? "correct-text" : "wrong-text"}>
-                                                {checkData.isCorrect ? "✅ Correct Answer" : "❌ Wrong Answer"}
-                                            </p>
-                                            {!checkData.isCorrect && (
-                                                <p className="correct-answer">
-                                                    Correct Answer: <strong>{checkData.correctAnswer}</strong>
+                                        <div className="answer-feedback">
+                                            {checkData.isCorrect ? (
+                                                <p className="correct-text">✅ Correct!</p>
+                                            ) : (
+                                                <p className="wrong-text">
+                                                    ❌ Wrong! Correct answer is: <strong>{checkData.correctAnswer}</strong>
                                                 </p>
                                             )}
                                         </div>
                                     )}
+
                                 </div>
                             );
                         })}
                     </div>
                 )}
-
-
             </div>
         </div>
     );
