@@ -79,7 +79,7 @@ const UploadNotes = () => {
 
         <input
           type="file"
-          accept=".pdf,.doc,.docx,.txt"
+          accept=".pdf"
           onChange={(e) => setFile(e.target.files[0])}
           ref={fileInputRef}
           disabled={loading}
