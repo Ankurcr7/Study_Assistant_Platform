@@ -11,7 +11,7 @@ const Login = ({ setPage, setIsLoggedIn }) => {
 
     try {
       const res = await axios.post(
-        "http://localhost:5000/api/auth/login",
+        "https://study-assistant-platform.onrender.com/api/auth/login",
         { email, password }
       );
 

@@ -25,7 +25,7 @@ const UploadNotes = () => {
       setProgress(0);
 
       await axios.post(
-        "http://localhost:5000/api/notes/upload",
+        "https://study-assistant-platform.onrender.com/api/notes/upload",
         formData,
         {
           headers: {

@@ -27,7 +27,7 @@ const Dashboard = ({ setPage }) => {
     const fetchStats = async () => {
       try {
         const res = await axios.get(
-          "http://localhost:5000/api/dashboard/stats",
+          "https://study-assistant-platform.onrender.com/api/dashboard/stats",
           {
             headers: {
               Authorization: `Bearer ${token}`,
