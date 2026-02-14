@@ -2,15 +2,25 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import ViewNotes from "./ViewNotes";
 
-const MyNotes = ({setPage}) => {
+const MyNotes = ({ setPage }) => {
     const [notes, setNotes] = useState([]);
     const [loading, setLoading] = useState(true);
     const [selectedNote, setSelectedNote] = useState(null);
+    const [deletingId, setDeletingId] = useState(null);
+
+    const removeNoteFromUI = (id) => {
+        setNotes(prev => prev.filter(note => note._id !== id));
+    };
 
     useEffect(() => {
         const fetchNotes = async () => {
             try {
                 const token = localStorage.getItem("token");
+
+                if (!token) {
+                    setPage("login");
+                    return;
+                }
 
                 const res = await axios.get(
                     "http://localhost:5000/api/notes/my",
@@ -23,19 +33,21 @@ const MyNotes = ({setPage}) => {
 
                 setNotes(res.data);
             } catch (error) {
-                alert("Failed to load notes");
+                console.error("Failed to fetch notes");
             } finally {
                 setLoading(false);
             }
         };
 
         fetchNotes();
-    }, []);
+    }, [setPage]);
 
     const handleDelete = async (id) => {
         if (!window.confirm("Delete this note?")) return;
 
         try {
+            setDeletingId(id);
+
             const token = localStorage.getItem("token");
 
             await axios.delete(
@@ -47,12 +59,14 @@ const MyNotes = ({setPage}) => {
                 }
             );
 
-            setNotes(notes.filter((note) => note._id !== id));
+            setNotes((prev) => prev.filter((note) => note._id !== id));
+
         } catch (error) {
             alert("Failed to delete note");
+        } finally {
+            setDeletingId(null);
         }
     };
-
 
     if (loading) return <p className="loading">Loading notes...</p>;
 
@@ -75,9 +89,12 @@ const MyNotes = ({setPage}) => {
                             <div className="note-icon">📘</div>
 
                             <h3>{note.title}</h3>
-                            <p className="file-type">{note.fileType}</p>
+                            <p className="file-type">
+                                {note.fileType?.split("/")[1]?.toUpperCase()}
+                            </p>
 
                             <div className="note-actions">
+                                {/* View Button */}
                                 <button
                                     className="view-btn"
                                     onClick={() => setSelectedNote(note)}
@@ -85,13 +102,13 @@ const MyNotes = ({setPage}) => {
                                     View
                                 </button>
 
-
-
+                                {/* Delete Button */}
                                 <button
                                     className="delete-btn"
                                     onClick={() => handleDelete(note._id)}
+                                    disabled={deletingId === note._id}
                                 >
-                                    Delete
+                                    {deletingId === note._id ? "Deleting..." : "Delete"}
                                 </button>
                             </div>
                         </div>
@@ -100,12 +117,14 @@ const MyNotes = ({setPage}) => {
             )}
 
             {selectedNote && (
-                <ViewNotes note={selectedNote} setPage={setPage} />
+                <ViewNotes
+                    note={selectedNote}
+                    onClose={() => setSelectedNote(null)}
+                    onDelete={removeNoteFromUI}
+                />
             )}
         </div>
-
     );
-
-}
+};
 
 export default MyNotes;

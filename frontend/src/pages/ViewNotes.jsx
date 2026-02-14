@@ -1,34 +1,74 @@
-import { useEffect, useState } from "react";
 import axios from "axios";
+import { useState } from "react";
 
-const ViewNotes = () => {
-  const [notes, setNotes] = useState([]);
+const ViewNotes = ({ note, onClose, onDelete }) => {
+  const [deleting, setDeleting] = useState(false);
 
-  useEffect(() => {
-    axios.get("http://localhost:5000/api/notes")
-      .then(res => setNotes(res.data));
-  }, []);
+  // ✅ Handle Delete
+  const handleDelete = async () => {
+    const confirmDelete = window.confirm(
+      "Are you sure you want to delete this note?"
+    );
+    if (!confirmDelete) return;
+
+    try {
+      setDeleting(true);
+
+      await axios.delete(
+        `http://localhost:5000/api/notes/${note._id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+
+      alert("Note deleted successfully ✅");
+
+      onDelete(note._id);
+      onClose();
+    } catch (error) {
+      alert(error.response?.data?.message || "Failed to delete note");
+    } finally {
+      setDeleting(false);
+    }
+  };
 
   return (
-    <div>
-      <h2>Your Notes</h2>
-
-      {notes.map(note => (
-        <div key={note._id} style={{ marginBottom: "20px" }}>
-          <h3>{note.title}</h3>
-          <pre style={{ whiteSpace: "pre-wrap" }}>
-            {note.extractedText}
-          </pre>
-
-          <a
-            href={`http://localhost:5000/uploads/${note.fileName}`}
-            target="_blank"
-            rel="noreferrer"
-          >
-            View Original File
-          </a>
+    <div className="view-overlay">
+      <div className="view-modal">
+        
+        {/* Header */}
+        <div className="view-header">
+          <h2>{note.title}</h2>
+          <button className="close-btn" onClick={onClose}>
+            ✖
+          </button>
         </div>
-      ))}
+
+        {/* PDF Preview */}
+        <div className="preview-container">
+          <iframe
+            src={`https://docs.google.com/gview?url=${note.fileUrl}&embedded=true`}
+            width="100%"
+            height="500px"
+            title="Note Preview"
+            style={{ border: "none" }}
+          />
+        </div>
+
+        {/* Actions */}
+        <div className="view-actions">
+          <button
+            className="delete-btn"
+            onClick={handleDelete}
+            disabled={deleting}
+          >
+            {deleting ? "Deleting..." : "Delete"}
+          </button>
+        </div>
+
+      </div>
     </div>
   );
 };
