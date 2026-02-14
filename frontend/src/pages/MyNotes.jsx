@@ -23,7 +23,7 @@ const MyNotes = ({ setPage }) => {
                 }
 
                 const res = await axios.get(
-                    "http://localhost:5000/api/notes/my",
+                    "https://study-assistant-platform.onrender.com/api/notes/my",
                     {
                         headers: {
                             Authorization: `Bearer ${token}`,
@@ -51,7 +51,7 @@ const MyNotes = ({ setPage }) => {
             const token = localStorage.getItem("token");
 
             await axios.delete(
-                `http://localhost:5000/api/notes/${id}`,
+                `https://study-assistant-platform.onrender.com/api/notes/${id}`,
                 {
                     headers: {
                         Authorization: `Bearer ${token}`,

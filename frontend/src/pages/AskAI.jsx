@@ -11,7 +11,7 @@ const AskAI = () => {
     useEffect(() => {
         const token = localStorage.getItem("token");
 
-        fetch("http://localhost:5000/api/ai/history", {
+        fetch("https://study-assistant-platform.onrender.com/api/ai/history", {
             headers: {
                 Authorization: `Bearer ${token}`
             }
@@ -31,7 +31,7 @@ const AskAI = () => {
         try {
             const token = localStorage.getItem("token");
 
-            const res = await fetch("http://localhost:5000/api/ai/ask", {
+            const res = await fetch("https://study-assistant-platform.onrender.com/api/ai/ask", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

@@ -38,7 +38,7 @@ const CreateQuiz = () => {
         setChecked({});
 
         try {
-            const res = await fetch("http://localhost:5000/api/ai/generatequiz", {
+            const res = await fetch("https://study-assistant-platform.onrender.com/api/ai/generatequiz", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -89,7 +89,7 @@ const CreateQuiz = () => {
         if (!token) return;
     
         try {
-            const res = await fetch("http://localhost:5000/api/ai/quizhistory", {
+            const res = await fetch("https://study-assistant-platform.onrender.com/api/ai/quizhistory", {
                 headers: {
                     "Authorization": `Bearer ${token}`
                 }
