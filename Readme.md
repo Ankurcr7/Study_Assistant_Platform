@@ -181,23 +181,23 @@ const response = await axios.post(
 
 # ⚙️ Core Features
 
-## 🧠 AI Question Answering
+### 🧠 AI Question Answering
 
 Students can ask academic questions and receive AI explanations.
 
-## 📄 AI Notes Summarization
+### 📄 AI Notes Summarization
 
 Upload notes and generate concise summaries.
 
-## 📚 Notes Management
+### 📚 Notes Management
 
 Upload and retrieve study materials from Cloudinary.
 
-## 🔐 Secure Authentication
+### 🔐 Secure Authentication
 
 JWT-based login and protected API routes.
 
-## 📊 Study History
+### 📊 Study History
 
 Store and retrieve past AI interactions.
 
@@ -302,4 +302,4 @@ To create a **secure AI-powered learning platform** that helps students study sm
 
 ---
 
-Thank you
+## Thank you
